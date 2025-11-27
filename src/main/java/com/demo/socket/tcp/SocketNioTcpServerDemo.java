@@ -10,7 +10,7 @@ import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 
 /**
- * 整体就是 Reactor 模型，也是NIO
+ * 整体就是基于事件模型的 Reactor 模型，也是NIO
  */
 public class SocketNioTcpServerDemo {
     public static void main(String[] args) throws IOException {

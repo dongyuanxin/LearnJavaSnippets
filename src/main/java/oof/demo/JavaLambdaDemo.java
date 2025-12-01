@@ -14,8 +14,15 @@ public class JavaLambdaDemo {
 //            }
 //        });
 //        Arrays.sort(array, (o1, o2) -> o1.compareToIgnoreCase(o2));
+
+        // 重要点2:  :: 写法是方法引用的语法糖
+        //  如果是static方法，就符合sort第二个参数 Comparator<? super T> c定义，也就是符合 Comparator 接口上 compare 定义 int compare(T o1, T o2)
+        Arrays.sort(array, JavaLambdaDemo::cmp);
+        //  如果是普通方法，虽然 compareToIgnoreCase 定义是 public int compareToIgnoreCase(String str) ，参数对不上 Comparator 但依然可以调用
+        //  这是因为在实际调用 compareToIgnoreCase 的时候，第一个隐含参数总是传入this，也就是 compareToIgnoreCase(String str) 会被改成 compareToIgnoreCase(String this, String str)
         Arrays.sort(array, String::compareToIgnoreCase);
         System.out.println(String.join(", ", array));
+
 
         // lambda 函数声明（引用为 greetService1）与 定义（需要实现抽象方法）。
         GreetingService greetService1 = message -> System.out.println("Hello " + message);
@@ -24,10 +31,14 @@ public class JavaLambdaDemo {
 
         JavaLambdaDemoOtherCls.runService("dongyuanxin", msg -> System.out.println("Hi " + msg));
     }
+
+    static int cmp(String s1, String s2) {
+        return s1.compareToIgnoreCase(s2);
+    }
 }
 
 /**
- * 重要要求：有且只有一个抽象方法；除此之外，可以有static/default等非具体的具备实现的方法，可以定义Objects里的public方法
+ * 重要点1：有且只有一个抽象方法；除此之外，可以有static/default等非具体的具备实现的方法，可以定义Objects里的public方法
  */
 @FunctionalInterface
 interface GreetingService

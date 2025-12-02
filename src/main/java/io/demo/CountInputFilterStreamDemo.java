@@ -12,10 +12,9 @@ public class CountInputFilterStreamDemo {
             while ((n = input.read()) != -1) {
                 System.out.println((char)n);
             }
-            System.out.println("Total bytes read: " + input.getBytesRead());
+//            System.out.println("Total bytes read: " + input.getBytesRead());
+            System.out.printf("Total bytes read: %d\n", input.getBytesRead());
         }
-
-
     }
 }
 

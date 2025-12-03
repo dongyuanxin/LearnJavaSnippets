@@ -12,7 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 /**
  * 并发问题：一个Servlet类在服务器中只有一个实例，但对于每个HTTP请求，Web服务器会使用多线程执行请求。因此，这里的doGet和doPost是多线程并发的，如果类里定义了字段，要特别关注多线程并发的问题。
  */
-@WebServlet(urlPatterns = "/")
+@WebServlet(urlPatterns = "/hello")
 public class HelloServlet extends HttpServlet {
 
     @Override

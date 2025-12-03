@@ -11,7 +11,7 @@ public class RedirectServlet extends HttpServlet {
     @Override
     protected void doGet(jakarta.servlet.http.HttpServletRequest req, jakarta.servlet.http.HttpServletResponse resp) throws ServletException, IOException {
         String name = req.getParameter("name");
-        String redirectUrl = "/" + (name == null ? "" : "?name=" + name);
+        String redirectUrl = "/hello" + (name == null ? "" : "?name=" + name);
         // 302 临时重定向
         resp.sendRedirect(redirectUrl);
 

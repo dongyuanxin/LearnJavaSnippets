@@ -14,6 +14,6 @@ import java.io.IOException;
 public class ForwardServlet extends HttpServlet {
     @Override
     protected void doGet(jakarta.servlet.http.HttpServletRequest req, jakarta.servlet.http.HttpServletResponse resp) throws ServletException, IOException {
-        req.getRequestDispatcher("/").forward(req, resp);
+        req.getRequestDispatcher("/hello").forward(req, resp);
     }
 }

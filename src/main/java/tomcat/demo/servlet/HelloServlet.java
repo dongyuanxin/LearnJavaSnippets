@@ -2,9 +2,11 @@ package tomcat.demo.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Set;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,6 +17,8 @@ import jakarta.servlet.http.HttpServletResponse;
 @WebServlet(urlPatterns = "/hello")
 public class HelloServlet extends HttpServlet {
 
+    private static final Set<String> LANGUAGES = Set.of("en", "zh");
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         // 和自己写 http 服务器相比，使用 Servlet 开发能屏蔽掉http协议，只关注业务逻辑。
@@ -24,6 +28,14 @@ public class HelloServlet extends HttpServlet {
         if (name == null) {
             name = "world";
         }
+        printAllCookies(req);
+        String lang = req.getParameter("lang");
+        if (lang != null && LANGUAGES.contains(lang)) {
+            Cookie cookie = new Cookie("lang", lang);
+            cookie.setPath("/"); // cookie 生效路径
+            cookie.setMaxAge(8640000); // cookie 生效时间 8640000秒=100天
+            resp.addCookie(cookie); // 添加响应
+        }
         // getOutputStream 获取字节写入流；getWriter 获取字符写入流
         PrintWriter pw = resp.getWriter();
         // 写入响应前，无需设置setContentLength()：
@@ -32,5 +44,14 @@ public class HelloServlet extends HttpServlet {
         // 写入完必须调用flush，因为多数都会复用tcp连接。flush() 确保缓冲区中的数据立即发送给客户端。
         pw.flush();
         // 写入完毕后千万不要调用close()，原因同样是因为会复用TCP连接，如果关闭写入流，将关闭TCP连接，使得Web服务器无法复用此TCP连接，无法完成后续操作
+    }
+
+    private void printAllCookies(HttpServletRequest req) {
+        Cookie[] cookies = req.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                System.out.println(cookie.getName() + ": " + cookie.getValue());
+            }
+        }
     }
 }

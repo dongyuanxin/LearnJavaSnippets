@@ -24,6 +24,18 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import tomcat.demo.controller.api.UserApiController;
 
+/**
+ * DispatcherServlet 作用：
+ * 0、承接所有的 /api/* 请求，在doGet和doPost中转发给 process 方法，然后 process 根据path匹配对应存储在getMappings或者postMappings中的 Dispatcher
+ * 1、在init方法中扫描所有Controller，将 Controller 中使用了“注解”的方法注册为 Dispatcher(key为path，存储在getMappings或者postMappings中）
+ * 2、在注册 Dispatcher 前，检查对应方法的返回类型、扫描并且保存方法的参数类型列表、参数名称列表
+ *
+ * Dispatcher 作用：接收到请求会从 process 转发下来
+ * 1、负责参数解析和绑定（根据process传来的req/resp，外加前面保存的参数类型列表、参数名称列表）
+ * 2、负责触发 Controller 的方法执行
+ * 3、拿到方法执行结果，将结果以 json 格式写入 resp 中
+ */
+
 @WebServlet(urlPatterns = "/api/*")
 public class DispatcherServlet extends HttpServlet {
 
@@ -37,7 +49,8 @@ public class DispatcherServlet extends HttpServlet {
     private List<Class<?>> controllers = List.of(UserApiController.class);
 
     /**
-     * 当Servlet容器创建当前Servlet实例后，会自动调用init(ServletConfig)方法
+     * 1、当Servlet容器创建当前Servlet实例后，会自动调用init(ServletConfig)方法
+     * 2、这里相当于一个IoC容器，将Controller中的方法注册为Dispatcher
      */
     @Override
     public void init() throws ServletException {

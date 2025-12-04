@@ -29,11 +29,7 @@ public class HelloServlet extends HttpServlet {
         if (name == null) {
             name = "world";
         }
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
         printAllCookies(req);
 
         printContext(req);

@@ -21,7 +21,6 @@ public class HomeServlet extends HttpServlet {
         String user = (String) req.getSession().getAttribute("user");
         resp.setContentType("text/html");
         resp.setCharacterEncoding("UTF-8");
-        resp.setHeader("X-Powered-By", "JavaEE Servlet");
         PrintWriter pw = resp.getWriter();
         pw.write("<h1>Welcome, " + (user != null ? user : "Guest") + "</h1>");
         if (user == null) {

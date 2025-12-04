@@ -10,6 +10,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import tomcat.demo.context.TomcatRequestContextHolder;
 
 /**
  * 并发问题：一个Servlet类在服务器中只有一个实例，但对于每个HTTP请求，Web服务器会使用多线程执行请求。因此，这里的doGet和doPost是多线程并发的，如果类里定义了字段，要特别关注多线程并发的问题。
@@ -28,7 +29,15 @@ public class HelloServlet extends HttpServlet {
         if (name == null) {
             name = "world";
         }
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         printAllCookies(req);
+
+        printContext(req);
+
         String lang = req.getParameter("lang");
         if (lang != null && LANGUAGES.contains(lang)) {
             Cookie cookie = new Cookie("lang", lang);
@@ -50,8 +59,16 @@ public class HelloServlet extends HttpServlet {
         Cookie[] cookies = req.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                System.out.println(cookie.getName() + ": " + cookie.getValue());
+                System.out.println("[HelloServlet] " + cookie.getName() + ": " + cookie.getValue());
             }
+        }
+    }
+
+    private void printContext(HttpServletRequest req) {
+        if (TomcatRequestContextHolder.get() == null) {
+            System.out.println("[HelloServlet] TomcatRequestContext is null");
+        } else {
+            System.out.println("[HelloServlet] TomcatRequestContext is not null, it's " + TomcatRequestContextHolder.get());
         }
     }
 }

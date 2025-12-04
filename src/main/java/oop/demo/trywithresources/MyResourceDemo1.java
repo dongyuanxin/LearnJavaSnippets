@@ -12,7 +12,7 @@ public class MyResourceDemo1 {
         } catch (IOException e) {
             System.out.println("error occur: " + e);
         }
-
+        return;
     }
 }
 

@@ -1,6 +1,7 @@
 package com.demo.jackson;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
 
@@ -10,6 +11,10 @@ public class JacksonDemo1 {
     public static void main(String[] args) throws Exception {
         // ObjectMapper 核心类，负责序列化和反序列化
         var mapper = new ObjectMapper();
+        // FAIL_ON_UNKNOWN_PROPERTIES: 当 JSON 中包含目标 Java 类中不存在的属性时的行为
+        // 默认为 true，但是改动后为false，遇到未知属性不会失败。
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
 
         // java object to json string: mapper.writeValueAsString
         Person person = new Person();

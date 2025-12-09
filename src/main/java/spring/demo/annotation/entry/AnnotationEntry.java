@@ -15,10 +15,16 @@ import java.time.ZoneId;
  * 2、@Bean: 第三方类（不是代码中自定义的类），无法使用 @Component，必须使用 @Bean
  * 3、@Qualifier：可以配合 @Bean、@Autowired 使用，指定一个名称，用于区分多个相同类型的bean
  * 4、@Profile：指定环境，只有匹配的才会被加载（-Dspring.profiles.active=test）
+ * 5、@EnableAspectJAutoProxy：开启 AspectJ （本质上是代理）AOP 编程。开启后，底层使用 CGLIB 来实现运行期动态创建Proxy
+ * 6、Spring 的AOP 基于 CGLIB 实现的 Proxy，本质上是将使用AOP注解的类，全部在运行时换成 Proxy Class。
+ *  有一说一，这里的代理类实现时，只实现了方法的代理，没有实现属性的代理，所以直接去访问属性时，指向是空的。
+ *  至于为什么没有在继承后的构造函数，按理说应该会初始化原始类的属性，为什么没有呢？因为继承后的构造函数并没有调用super()。
+ *  再看 UserService.login() 中使用 MailService，实际上运行时访问的是代理类，自然读不到 zoneId ，但是可以调用 getZoneId
  */
 @Configuration
 @ComponentScan("spring.demo.annotation")
 @PropertySource("smtp.properties")
+@EnableAspectJAutoProxy
 public class AnnotationEntry {
     @Bean
     @Qualifier("z")

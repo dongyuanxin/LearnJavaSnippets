@@ -5,14 +5,17 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import spring.demo.annotation.aspect.MetricTime;
 
 /**
  * 1、@Autowired(required = false)：找不到也不报错，走默认构造函数
  */
 @Component
+@Data
 public class MailService {
     @Autowired(required = false)
     @Qualifier("z")
@@ -25,6 +28,7 @@ public class MailService {
         return ZonedDateTime.now(this.zoneId).format(DateTimeFormatter.ISO_ZONED_DATE_TIME);
     }
 
+    @MetricTime("MailService.sendLoginMail")
     public void sendLoginMail(User user) {
         System.err.println(String.format("Hi, %s! You are logged in at %s", user.getName(), getTime()));
         System.out.printf("smtpConfig.getHost is %s\n", smtpConfig.getHost());
@@ -32,6 +36,5 @@ public class MailService {
 
     public void sendRegistrationMail(User user) {
         System.err.println(String.format("Welcome, %s!", user.getName()));
-
     }
 }

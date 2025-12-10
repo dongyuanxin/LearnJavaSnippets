@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.*;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import spring.demo.annotation.service.AppService;
 import spring.demo.annotation.service.User;
 import spring.demo.annotation.service.UserService;
@@ -26,12 +29,17 @@ import java.util.List;
  *  有一说一，这里的代理类实现时，只实现了方法的代理，没有实现属性的代理，所以直接去访问属性时，指向是空的。
  *  至于为什么没有在继承后的构造函数，按理说应该会初始化原始类的属性，为什么没有呢？因为继承后的构造函数并没有调用super()。
  *  再看 UserService.login() 中使用 MailService，实际上运行时访问的是代理类，自然读不到 zoneId ，但是可以调用 getZoneId
+ *  7、通过 JbdcTemplate 和 DataSource 这两个Bean来完成数据库操作。
+ *  8、通过 @EnableTransactionManagement 来开启事务注解，需要再给IoC注入一个PlatformTransactionManager事务管理器；
+ *     通过 @Transactional 来开启事务，注意事务本身是通过ThreadLocal实现的；
+ *     另外事务的传播默认是 REQUIRED，也就是默认是开启事务的。
  */
 @Configuration
 @ComponentScan("spring.demo.annotation")
 @PropertySource("smtp.properties")
 @PropertySource("jdbc.properties")
 @EnableAspectJAutoProxy
+@EnableTransactionManagement
 public class AnnotationEntry {
     @Bean
     @Qualifier("z")
@@ -77,6 +85,11 @@ public class AnnotationEntry {
     @Bean
     JdbcTemplate createJbdcTemplate(@Autowired DataSource dataSource) {
         return new JdbcTemplate(dataSource);
+    }
+
+    @Bean
+    PlatformTransactionManager createTxManager(@Autowired DataSource dataSource) {
+        return new DataSourceTransactionManager(dataSource);
     }
 
     public static void main(String[] args) {

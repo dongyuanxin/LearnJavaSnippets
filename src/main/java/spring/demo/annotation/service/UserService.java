@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import spring.demo.annotation.aspect.MetricTime;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -23,6 +24,7 @@ import org.springframework.jdbc.support.KeyHolder;
  * 3、@PostConstruct、@PreDestroy：IoC 生命周期
  */
 @Component
+@Transactional
 public class UserService {
 
     @Autowired

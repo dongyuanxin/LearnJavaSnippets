@@ -13,7 +13,7 @@ public class JavaLambdaDemo {
 //                return o1.compareTo(o2);
 //            }
 //        });
-//        Arrays.sort(array, (o1, o2) -> o1.compareToIgnoreCase(o2));
+        Arrays.sort(array, (o1, o2) -> o1.compareToIgnoreCase(o2));
 
         // 重要点2:  :: 写法是方法引用的语法糖
         //  如果是static方法，就符合sort第二个参数 Comparator<? super T> c定义，也就是符合 Comparator 接口上 compare 定义 int compare(T o1, T o2)

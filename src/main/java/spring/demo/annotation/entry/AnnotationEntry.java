@@ -1,13 +1,18 @@
 package spring.demo.annotation.entry;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.*;
+import org.springframework.jdbc.core.JdbcTemplate;
 import spring.demo.annotation.service.AppService;
 import spring.demo.annotation.service.User;
 import spring.demo.annotation.service.UserService;
 
+import javax.sql.DataSource;
 import java.time.ZoneId;
 
 /**
@@ -24,6 +29,7 @@ import java.time.ZoneId;
 @Configuration
 @ComponentScan("spring.demo.annotation")
 @PropertySource("smtp.properties")
+@PropertySource("jdbc.properties")
 @EnableAspectJAutoProxy
 public class AnnotationEntry {
     @Bean
@@ -44,6 +50,32 @@ public class AnnotationEntry {
     @Qualifier("utc8")
     ZoneId createZoneOfUTC8() {
         return ZoneId.of("UTC+08:00");
+    }
+
+    @Value("${jdbc.url}")
+    String jdbcUrl;
+
+    @Value("${jdbc.username}")
+    String jdbcUsername;
+
+    @Value("${jdbc.password}")
+    String jdbcPassword;
+
+    @Bean
+    DataSource createDataSource() {
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl(jdbcUrl);
+        config.setUsername(jdbcUsername);
+        config.setPassword(jdbcPassword);
+        config.addDataSourceProperty("autoCommit", "true");
+        config.addDataSourceProperty("connectionTimeout", "5");
+        config.addDataSourceProperty("idleTimeout", "60");
+        return new HikariDataSource(config);
+    }
+
+    @Bean
+    JdbcTemplate createJbdcTemplate(@Autowired DataSource dataSource) {
+        return new JdbcTemplate(dataSource);
     }
 
     public static void main(String[] args) {

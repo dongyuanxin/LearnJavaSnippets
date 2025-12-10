@@ -1,4 +1,4 @@
-package spring.demo.annotation.service;
+package spring.demo.annotation.model;
 
 import lombok.Data;
 

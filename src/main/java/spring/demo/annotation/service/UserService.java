@@ -1,14 +1,12 @@
 package spring.demo.annotation.service;
 
 import java.sql.ResultSet;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.sql.Statement;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
-import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -17,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import spring.demo.annotation.aspect.MetricTime;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
+import spring.demo.annotation.model.User;
 
 /**
  * 1、@Component：被 Spring 扫描并注册为 bean；@Service、@Repository、@Controller 等都是 @Component 的派生注解

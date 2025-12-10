@@ -11,8 +11,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import spring.demo.annotation.model.AnimalType;
+import spring.demo.annotation.service.AnimalService;
 import spring.demo.annotation.service.AppService;
-import spring.demo.annotation.service.User;
+import spring.demo.annotation.model.User;
 import spring.demo.annotation.service.UserService;
 
 import javax.sql.DataSource;
@@ -105,13 +107,20 @@ public class AnnotationEntry {
         /**
          * 以下是体现DB的用法
          */
-        userService.registerInDb("bob@example.com", "password1", "Bob");
-        userService.registerInDb("alice@example.com", "password2", "Alice");
+//        userService.registerInDb("bob@example.com", "password1", "Bob");
+//        userService.registerInDb("alice@example.com", "password2", "Alice");
+//
+//        List<User> users = userService.getUsersInDb(1);
+//        // print users
+//        users.stream()
+//                .map(item -> "打印批量查询结果: " + item)
+//                .forEach(System.out::println);
 
-        List<User> users = userService.getUsersInDb(1);
-        // print users
-        users.stream()
-                .map(item -> "打印批量查询结果: " + item)
-                .forEach(System.out::println);
+
+        /**
+         * 以下体现DAO的用法
+         */
+        AnimalService animalService = context.getBean(AnimalService.class);
+        animalService.createAnimal(AnimalType.DOG, "1", "Dog", 1);
     }
 }

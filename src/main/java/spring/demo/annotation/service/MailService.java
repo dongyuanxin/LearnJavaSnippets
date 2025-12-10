@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import spring.demo.annotation.aspect.MetricTime;
+import spring.demo.annotation.model.User;
 
 /**
  * 1、@Autowired(required = false)：找不到也不报错，走默认构造函数

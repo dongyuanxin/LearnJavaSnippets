@@ -18,5 +18,12 @@ public class DatabaseInitializer {
                 + "password VARCHAR(100) NOT NULL, " //
                 + "name VARCHAR(100) NOT NULL, " //
                 + "UNIQUE (email))");
+
+        jdbcTemplate.update("CREATE TABLE IF NOT EXISTS animals (" //
+                + "id BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY, " //
+                + "type ENUM('DOG', 'CAT', 'BIRD', 'FISH') NOT NULL, " //
+                + "ownerId VARCHAR(100) DEFAULT '', " // 关联Users表
+                + "name VARCHAR(100) NOT NULL, "
+                + "age INT DEFAULT 0)");
     }
 }

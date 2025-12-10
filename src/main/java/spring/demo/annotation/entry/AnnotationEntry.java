@@ -14,6 +14,7 @@ import spring.demo.annotation.service.UserService;
 
 import javax.sql.DataSource;
 import java.time.ZoneId;
+import java.util.List;
 
 /**
  * 1、@Configuration：标识一个类为配置类；@ComponentScan 开启扫描，默认是当前包及其子包，这里因为设计并行关系，所以必须是指明地址，不然只能扫描 spring.demo.annotation.entry 以及子包
@@ -87,5 +88,17 @@ public class AnnotationEntry {
 
         AppService appService = context.getBean(AppService.class);
         appService.printLogo();
+
+        /**
+         * 以下是体现DB的用法
+         */
+        userService.registerInDb("bob@example.com", "password1", "Bob");
+        userService.registerInDb("alice@example.com", "password2", "Alice");
+
+        List<User> users = userService.getUsersInDb(1);
+        // print users
+        users.stream()
+                .map(item -> "打印批量查询结果: " + item)
+                .forEach(System.out::println);
     }
 }

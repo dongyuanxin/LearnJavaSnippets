@@ -1,15 +1,21 @@
 package spring.demo.annotation.service;
 
+import java.sql.ResultSet;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.sql.Statement;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import spring.demo.annotation.aspect.MetricTime;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 
 /**
  * 1、@Component：被 Spring 扫描并注册为 bean；@Service、@Repository、@Controller 等都是 @Component 的派生注解
@@ -18,6 +24,9 @@ import spring.demo.annotation.aspect.MetricTime;
  */
 @Component
 public class UserService {
+
+    @Autowired
+    JdbcTemplate jdbcTemplate;
 
     @Autowired
     MailService mailService;
@@ -74,5 +83,41 @@ public class UserService {
         users.add(user);
         mailService.sendRegistrationMail(user);
         return user;
+    }
+
+    /**
+     * ******************************
+     * 以下是和sql有关的实现
+     * 1、queryForObject 查询单个对象/单个值，常用于count、单独对象查询
+     * 2、query：高级查询，查询多个对象/结果
+     * 3、执行update时，自增的key结果，可以通过 GeneratedKeyHolder 对象拿到
+     * ******************************
+     */
+
+    public long getUsersInDb() {
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM users", (ResultSet rs, int rowNum) -> {
+            return rs.getLong(1);
+        });
+    }
+
+    public List<User> getUsersInDb(int pageIndex) {
+        int limit = 2;
+        int offset = limit * (pageIndex - 1);
+        return jdbcTemplate.query("SELECT * FROM users LIMIT ? OFFSET ?", new BeanPropertyRowMapper<>(User.class), limit, offset);
+    }
+
+    public User registerInDb(String email, String password, String name) {
+        KeyHolder holder = new GeneratedKeyHolder();
+        if (1 != jdbcTemplate.update((conn) -> {
+            var ps = conn.prepareStatement("INSERT INTO users(email, password, name) VALUES(?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+            ps.setObject(1, email);
+            ps.setObject(2, password);
+            ps.setObject(3, name);
+            return ps;
+        }, holder)) {
+            throw new RuntimeException("Insert failed.");
+        }
+        System.out.printf("Insert user %s success.", holder.getKey().longValue());
+        return new User(holder.getKey().longValue(), email, password, name);
     }
 }

@@ -25,5 +25,15 @@ public class DatabaseInitializer {
                 + "ownerId VARCHAR(100) DEFAULT '', " // 关联Users表
                 + "name VARCHAR(100) NOT NULL, "
                 + "age INT DEFAULT 0)");
+
+        jdbcTemplate.update("CREATE TABLE IF NOT EXISTS orders ("
+                + "id BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY, "
+                + "userId BIGINT NOT NULL, "
+                + "productName VARCHAR(100) NOT NULL, "
+                + "quantity INT NOT NULL, "
+                + "price DOUBLE NOT NULL, "
+                + "status ENUM('PENDING', 'SHIPPED', 'DELIVERED', 'CANCELED') NOT NULL, "
+                + "createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)");
+
     }
 }

@@ -2,6 +2,8 @@ package spring.demo.annotation.entry;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.mybatis.spring.SqlSessionFactoryBean;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,9 +14,11 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import spring.demo.annotation.model.AnimalType;
+import spring.demo.annotation.model.OrderStatus;
 import spring.demo.annotation.service.AnimalService;
 import spring.demo.annotation.service.AppService;
 import spring.demo.annotation.model.User;
+import spring.demo.annotation.service.OrderService;
 import spring.demo.annotation.service.UserService;
 
 import javax.sql.DataSource;
@@ -35,11 +39,14 @@ import java.util.List;
  *  8、通过 @EnableTransactionManagement 来开启事务注解，需要再给IoC注入一个PlatformTransactionManager事务管理器；
  *     通过 @Transactional 来开启事务，注意事务本身是通过ThreadLocal实现的；
  *     另外事务的传播默认是 REQUIRED，也就是默认是开启事务的。
+ *  9、@MapperScan 半自动 ORM 框架 MyBatis 会将 java class（mapper）生成为 SQL 语句，需要提前创建和注入 SqlSessionFactoryBean
+ *    ORM的流程：Controller（代码里没有） -> Service -> Mapper -> ORM Framework(MyBatis) -> SQL
  */
 @Configuration
 @ComponentScan("spring.demo.annotation")
 @PropertySource("smtp.properties")
 @PropertySource("jdbc.properties")
+@MapperScan("spring.demo.annotation.mapper")
 @EnableAspectJAutoProxy
 @EnableTransactionManagement
 public class AnnotationEntry {
@@ -90,6 +97,18 @@ public class AnnotationEntry {
     }
 
     @Bean
+    SqlSessionFactoryBean createSqlSessionFactory(@Autowired DataSource dataSource) {
+        try {
+            var sqlSessionFactoryBean = new SqlSessionFactoryBean();
+            sqlSessionFactoryBean.setDataSource(dataSource);
+            return sqlSessionFactoryBean;
+        } catch (Throwable e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    @Bean
     PlatformTransactionManager createTxManager(@Autowired DataSource dataSource) {
         return new DataSourceTransactionManager(dataSource);
     }
@@ -113,14 +132,24 @@ public class AnnotationEntry {
 //        List<User> users = userService.getUsersInDb(1);
 //        // print users
 //        users.stream()
-//                .map(item -> "打印批量查询结果: " + item)
+//                .map(item -> "打印批量用户查询结果: " + item)
 //                .forEach(System.out::println);
 
 
         /**
          * 以下体现DAO的用法
          */
-        AnimalService animalService = context.getBean(AnimalService.class);
-        animalService.createAnimal(AnimalType.DOG, "1", "Dog", 1);
+//        AnimalService animalService = context.getBean(AnimalService.class);
+//        animalService.createAnimal(AnimalType.DOG, "1", "Dog", 1);
+
+        /**
+         * 以下体现半自动ORM框架 MyBatis 的用法
+         */
+        OrderService orderService = context.getBean(OrderService.class);
+        orderService.insert(1L, "Product1", 1, 10.00, OrderStatus.PENDING);
+        orderService.getOrderList(0, 10)
+                .stream()
+                .map(item -> "打印批量订单查询结果: " + item)
+                .forEach(System.out::println);
     }
 }
